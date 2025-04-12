@@ -1,0 +1,29 @@
+Como empleado, quiero registrarme en la plataforma con usuario y contraseña para acceder al sistema. (Samuel) 
+
+Como empleado, quiero iniciar sesión con mis credenciales para acceder a mi perfil y funciones. (Jeronimo)
+
+Como empleado, quiero recuperar mi contraseña vía correo electrónico para restablecer mi acceso en caso de olvido. (Samuel)
+  
+Como usuario no autenticado, quiero que se me impida acceder a información privada para proteger los datos. (Jeronimo)
+  
+Como empleado, quiero que el sistema recuerde mi sesión para no tener que ingresar mis datos repetidamente. (Samuel)
+  
+Como administrador, quiero aprobar los registros de empleados para garantizar la seguridad del acceso. (Jeronimo)
+  
+Como empleado, quiero buscar a personas de mi interés por nombre, cargo o empresa para contactarlos rápidamente. (Samuel)
+
+Como empleado, quiero ver el nombre, cargo, empresa, teléfono y correo de mis compañeros para comunicarme con ellos. (Jeronimo)
+  
+Como empleado, quiero ver la jerarquía de la empresa para identificar jefes y subordinados dentro de la organización. (Samuel)
+  
+Como administrador, quiero registrar nuevos empleados con sus datos para integrarlos al sistema. (Jeronimo)
+  
+Como administrador, quiero modificar la información de los empleados para actualizar datos erróneos o desactualizados. (Samuel)
+  
+Como administrador, quiero eliminar empleados del sistema sin perder su historial para mantener la base de datos limpia. (Jeronimo)
+  
+Como administrador, quiero registrar nuevos proyectos y asignar empleados para organizarlos mejor. (Samuel)
+  
+Como administrador, quiero asignar empleados a proyectos específicos para estructurar los equipos de trabajo. (Jeronimo)
+
+Como empleado, quiero ver los proyectos en los que estoy participando para saber mis responsabilidades. (Samuel)
