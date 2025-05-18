@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #80deea);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background-color: #00796b;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #004d40;
+        }
+
+        .secondary-button {
+            background-color: #004d40;
+            margin-top: 15px;
+        }
+
+        .terciary-button {
+            background-color: #00796b;
+            margin-top: 15px;
+        }
+
+        #registroMsg {
+            margin-top: 15px;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Crear una Cuenta</h1>
+
+    <form id="registroForm">
+        <input type="text" placeholder="Usuario" id="regUsername" required>
+        <input type="email" placeholder="Email" id="regEmail" required>
+        <input type="password" placeholder="Contraseña" id="regPassword" required>
+        <select id="regRol">
+            <option value="admin">Admin</option>
+            <option value="cliente">Cliente</option>
+        </select>
+        <button type="submit">Registrarse</button>
+    </form>
+
+    <p id="registroMsg"></p>
+
+    <button class="secondary-button" onclick="window.location.href='login.html'">
+        ¿Ya tienes cuenta? Inicia sesión
+    </button>
+    <button class="terciary-button" onclick="window.location.href='index.html'">
+        Volver a la página principal
+    </button>
+</div>
+
+<script src="js/registro.js"></script>
+</body>
+</html>

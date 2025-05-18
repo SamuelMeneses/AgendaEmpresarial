@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido a la Agenda</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #004d40, #00796b);
+            color: white;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: fadeInDown 1s ease forwards;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: fadeInDown 1.5s ease forwards;
+        }
+
+        .botones {
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 2s ease forwards;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .login-btn {
+            background-color: #26a69a;
+            color: white;
+        }
+
+        .registro-btn {
+            background-color: #004d40;
+            color: white;
+            border: 1px solid #26a69a;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animación decorativa del fondo */
+        .circulo {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .circulo:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 15%;
+        }
+
+        .circulo:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .circulo:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 60%;
+            left: 75%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Círculos decorativos flotantes -->
+<div class="circulo"></div>
+<div class="circulo"></div>
+<div class="circulo"></div>
+
+<h1>Bienvenido a la Agenda de Contactos</h1>
+<p>Selecciona una opción para continuar:</p>
+
+<div class="botones">
+    <button class="login-btn" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+    <button class="registro-btn" onclick="window.location.href='registro.html'">Registrarse</button>
+</div>
+
+</body>
+</html>

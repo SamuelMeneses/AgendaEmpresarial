@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #80deea);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background-color: #00796b;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #004d40;
+        }
+
+        .secondary-button {
+            background-color: #004d40;
+            margin-top: 15px;
+        }
+
+        .terciary-button {
+            background-color: #00796b;
+            margin-top: 15px;
+        }
+
+        #loginMsg {
+            margin-top: 15px;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Iniciar Sesión</h1>
+
+    <form id="loginForm">
+        <input type="text" placeholder="Usuario" id="loginUsername" required>
+        <input type="password" placeholder="Contraseña" id="loginPassword" required>
+        <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <p id="loginMsg"></p>
+
+    <button class="secondary-button" onclick="window.location.href='registro.html'">
+        ¿No tienes cuenta? Regístrate
+    </button>
+    <button class="terciary-button" onclick="window.location.href='index.html'">
+        Volver a la página principal
+    </button>
+</div>
+
+<script src="js/login.js"></script>
+</body>
+</html>
