@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Editar Usuario</title>
+</head>
+<body>
+<h2>Editar Usuario</h2>
+<form id="editarUsuarioForm">
+    <label>
+        Email:
+        <input type="email" id="email" name="email" required/>
+    </label>
+    <br/>
+    <label>
+        Rol:
+        <select id="rol" name="rol" required>
+            <option value="admin">Admin</option>
+            <option value="cliente">Cliente</option>
+        </select>
+    </label>
+    <br/>
+    <label>
+        Teléfono:
+        <input type="text" id="telefono" name="telefono"/>
+    </label>
+    <br/>
+    <label>
+        Empresa:
+        <input type="text" id="empresa" name="empresa"/>
+    </label>
+    <br/>
+    <label>
+        Cargo:
+        <input type="text" id="cargo" name="cargo"/>
+    </label>
+    <br/>
+    <label>
+        Jefe Inmediato:
+        <input type="text" id="jefe_inmediato" name="jefe_inmediato"/>
+    </label>
+    <br/>
+    <label>
+        En Proyecto:
+        <input type="checkbox" id="en_proyecto" name="en_proyecto"/>
+    </label>
+    <br/>
+    <div id="proyectoCampos" style="display:none; margin-left: 20px;">
+        <label>
+            Nombre Proyecto:
+            <input type="text" id="nombre_proyecto" name="nombre_proyecto"/>
+        </label>
+        <br/>
+        <label>
+            Líder Proyecto:
+            <input type="text" id="lider_proyecto" name="lider_proyecto"/>
+        </label>
+        <br/>
+        <label>
+            Cargo Proyecto:
+            <input type="text" id="cargo_proyecto" name="cargo_proyecto"/>
+        </label>
+    </div>
+    <br/>
+    <button type="submit">Actualizar Usuario</button>
+</form>
+
+<script src="js/editarusuario.js"></script>
+</body>
+</html>

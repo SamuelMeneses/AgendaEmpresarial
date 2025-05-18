@@ -1,8 +1,7 @@
 import datetime
 from functools import wraps
-
 import jwt
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Api, Resource, fields
@@ -12,6 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'colder'
+
 
 # Configura la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///agenda.db'
@@ -32,6 +32,16 @@ class Usuario(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     rol = db.Column(db.String(20), nullable=False)  # 'admin' o 'cliente'
+    apellido = db.Column(db.String(80))
+    telefono = db.Column(db.String(20))
+    empresa = db.Column(db.String(100))
+    cargo = db.Column(db.String(100))
+    jefe_inmediato = db.Column(db.String(100))
+    en_proyecto = db.Column(db.Boolean, default=False)
+    nombre_proyecto = db.Column(db.String(100))
+    lider_proyecto = db.Column(db.String(100))
+    cargo_proyecto = db.Column(db.String(100))
+
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -63,7 +73,16 @@ user_model = auth_ns.model('User', {
     'username': fields.String(required=True, description='Nombre de usuario'),
     'email': fields.String(required=True, description='Correo electrónico'),
     'password': fields.String(required=True, description='Contraseña'),
-    'rol': fields.String(required=True, description='Rol del usuario: admin o cliente')
+    'rol': fields.String(required=True, description='Rol del usuario: admin o cliente'),
+    'apellido': fields.String(required=False),
+    'telefono': fields.String(required=False),
+    'empresa': fields.String(required=False),
+    'cargo': fields.String(required=False),
+    'jefe_inmediato': fields.String(required=False),
+    'en_proyecto': fields.Boolean(required=False),
+    'nombre_proyecto': fields.String(required=False),
+    'lider_proyecto': fields.String(required=False),
+    'cargo_proyecto': fields.String(required=False),
 })
 
 login_model = auth_ns.model('Login', {
@@ -77,15 +96,22 @@ class Register(Resource):
     def post(self):
         data = request.json
 
-        # Validar si usuario ya existe
         if Usuario.query.filter((Usuario.username == data['username']) | (Usuario.email == data['email'])).first():
             return {'mensaje': 'Usuario o correo ya registrado'}, 400
 
-        # Crear nuevo usuario
         nuevo_usuario = Usuario(
             username=data['username'],
             email=data['email'],
-            rol=data['rol']
+            rol=data['rol'],
+            apellido=data.get('apellido'),
+            telefono=data.get('telefono'),
+            empresa=data.get('empresa'),
+            cargo=data.get('cargo'),
+            jefe_inmediato=data.get('jefe_inmediato'),
+            en_proyecto=data.get('en_proyecto', False),
+            nombre_proyecto=data.get('nombre_proyecto') if data.get('en_proyecto') else None,
+            lider_proyecto=data.get('lider_proyecto') if data.get('en_proyecto') else None,
+            cargo_proyecto=data.get('cargo_proyecto') if data.get('en_proyecto') else None
         )
         nuevo_usuario.set_password(data['password'])
 
@@ -136,8 +162,16 @@ class ListaUsuarios(Resource):
                     'id': u.id,
                     'username': u.username,
                     'email': u.email,
-                    'password_hash': u.password_hash,
-                    'rol': u.rol
+                    'rol': u.rol,
+                    'apellido': u.apellido,
+                    'telefono': u.telefono,
+                    'empresa': u.empresa,
+                    'cargo': u.cargo,
+                    'jefe_inmediato': u.jefe_inmediato,
+                    'en_proyecto': u.en_proyecto,
+                    'nombre_proyecto': u.nombre_proyecto,
+                    'lider_proyecto': u.lider_proyecto,
+                    'cargo_proyecto': u.cargo_proyecto,
                 } for u in usuarios
             ]
         elif current_user.rol == 'cliente':
@@ -151,6 +185,42 @@ class ListaUsuarios(Resource):
             return {'mensaje': 'Rol no autorizado'}, 403
 
         return resultado
+
+@auth_ns.route('/editar_usuario/<int:id_usuario>')
+class EditarUsuario(Resource):
+    @token_requerido
+    def put(current_user, id_usuario):
+        if current_user.rol != 'admin':
+            return {'mensaje': 'Acceso denegado. Solo los administradores pueden editar usuarios.'}, 403
+
+        usuario = Usuario.query.get(id_usuario)
+        if not usuario:
+            return {'mensaje': 'Usuario no encontrado'}, 404
+
+        data = request.json
+
+        # Actualizar los campos
+        usuario.email = data.get('email', usuario.email)
+        usuario.rol = data.get('rol', usuario.rol)
+        usuario.telefono = data.get('telefono', usuario.telefono)
+        usuario.empresa = data.get('empresa', usuario.empresa)
+        usuario.cargo = data.get('cargo', usuario.cargo)
+        usuario.jefe_inmediato = data.get('jefe_inmediato', usuario.jefe_inmediato)
+        usuario.en_proyecto = data.get('en_proyecto', usuario.en_proyecto)
+
+        if usuario.en_proyecto:
+            usuario.nombre_proyecto = data.get('nombre_proyecto', usuario.nombre_proyecto)
+            usuario.lider_proyecto = data.get('lider_proyecto', usuario.lider_proyecto)
+            usuario.cargo_proyecto = data.get('cargo_proyecto', usuario.cargo_proyecto)
+        else:
+            usuario.nombre_proyecto = None
+            usuario.lider_proyecto = None
+            usuario.cargo_proyecto = None
+
+        db.session.commit()
+
+        return {'mensaje': 'Usuario actualizado exitosamente'}
+
 
 with app.app_context():
     db.create_all()

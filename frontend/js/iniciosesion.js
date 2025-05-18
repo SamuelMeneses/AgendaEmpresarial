@@ -35,22 +35,41 @@ async function verUsuarios() {
             div.classList.add("usuario");
 
             if (userInfo.rol === "admin") {
+                let proyectoHTML = "";
+
+                if (usuario.en_proyecto) {
+                    proyectoHTML = `
+            <p><strong>Nombre Proyecto:</strong> ${usuario.nombre_proyecto}</p>
+            <p><strong>Líder Proyecto:</strong> ${usuario.lider_proyecto}</p>
+            <p><strong>Cargo Proyecto:</strong> ${usuario.cargo_proyecto}</p>
+        `;
+                }
+
                 div.innerHTML = `
-                    <p><strong>ID:</strong> ${usuario.id}</p>
-                    <p><strong>Usuario:</strong> ${usuario.username}</p>
-                    <p><strong>Correo:</strong> ${usuario.email}</p>
-                    <p><strong>Rol:</strong> ${usuario.rol}</p>
-                    <div class="acciones">
-                        <button onclick="editarUsuario(${usuario.id})">Editar</button>
-                        <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
-                    </div>
-                `;
+        <p><strong>ID:</strong> ${usuario.id}</p>
+        <p><strong>Usuario:</strong> ${usuario.username}</p>
+        <p><strong>Apellido:</strong> ${usuario.apellido}</p>
+        <p><strong>Telefono:</strong> ${usuario.telefono}</p>
+        <p><strong>Email:</strong> ${usuario.email}</p>
+        <p><strong>Rol:</strong> ${usuario.rol}</p>
+        <p><strong>Empresa:</strong> ${usuario.empresa}</p>
+        <p><strong>Cargo:</strong> ${usuario.cargo}</p>
+        <p><strong>Jefe Inmediato:</strong> ${usuario.jefe_inmediato}</p>
+        
+        ${proyectoHTML}
+
+        <div class="acciones">
+            <button onclick="editarUsuario(${usuario.id})">Editar</button>
+            <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+        </div>
+    `;
             } else {
                 div.innerHTML = `
-                    <p><strong>Usuario:</strong> ${usuario.username}</p>
-                    <p><strong>Correo:</strong> ${usuario.email}</p>
-                `;
+        <p><strong>Usuario:</strong> ${usuario.username}</p>
+        <p><strong>Correo:</strong> ${usuario.email}</p>
+    `;
             }
+
 
             container.appendChild(div);
         });
@@ -68,7 +87,7 @@ async function verUsuarios() {
 }
 
 function editarUsuario(id) {
-    alert("Función de editar usuario " + id + " (aún no implementada)");
+    window.location.href = `editarusuario.html?id=${id}`;
 }
 
 function eliminarUsuario(id) {
@@ -76,5 +95,5 @@ function eliminarUsuario(id) {
 }
 
 function agregarUsuario() {
-    alert("Función de agregar usuario (aún no implementada)");
+    window.location.href = "agregarusuario.html";
 }
