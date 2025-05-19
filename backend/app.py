@@ -1,16 +1,33 @@
 import datetime
 from functools import wraps
 import jwt
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request
 from flask_cors import CORS
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Api, Resource, fields
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
+import logging
+
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s'
+)
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+
+
+
 
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'colder'
+
 
 
 # Configura la base de datos
@@ -95,8 +112,10 @@ class Register(Resource):
     @auth_ns.expect(user_model)
     def post(self):
         data = request.json
+        logging.info(f"Intento de registro para usuario: {data['username']}")
 
         if Usuario.query.filter((Usuario.username == data['username']) | (Usuario.email == data['email'])).first():
+            logging.warning(f"Registro fallido, usuario o correo ya registrado: {data['username']}")
             return {'mensaje': 'Usuario o correo ya registrado'}, 400
 
         nuevo_usuario = Usuario(
@@ -118,6 +137,7 @@ class Register(Resource):
         db.session.add(nuevo_usuario)
         db.session.commit()
 
+        logging.info(f"Usuario registrado exitosamente: {data['username']}")
         return {'mensaje': 'Usuario registrado exitosamente'}, 201
 
 @auth_ns.route('/login')
@@ -125,9 +145,11 @@ class Login(Resource):
     @auth_ns.expect(login_model)
     def post(self):
         data = request.json
+        logging.info(f"Intento de login para usuario: {data.get('username')}")
 
         usuario = Usuario.query.filter_by(username=data['username']).first()
         if not usuario or not usuario.check_password(data['password']):
+            logging.warning(f"Login fallido para usuario: {data.get('username')}")
             return {'mensaje': 'Usuario o contraseña incorrectos'}, 401
 
         # Crear token JWT con expiración (ejemplo: 1 hora)
@@ -136,6 +158,7 @@ class Login(Resource):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }, app.config['SECRET_KEY'], algorithm='HS256')
 
+        logging.info(f"Login exitoso para usuario: {data.get('username')}, token generado")
         return {'token': token}
 
 
@@ -143,6 +166,7 @@ class Login(Resource):
 class WhoAmI(Resource):
     @token_requerido
     def get(current_user, *args, **kwargs):
+        logging.info(f"Usuario {current_user.username} (id: {current_user.id}) solicitó su información personal (whoami)")
         return {
             'id': current_user.id,
             'username': current_user.username,
@@ -154,9 +178,11 @@ class WhoAmI(Resource):
 class ListaUsuarios(Resource):
     @token_requerido
     def get(current_user, *args, **kwargs):
+        logging.info(f"Usuario {current_user.username} (rol: {current_user.rol}) solicitó la lista de usuarios")
         usuarios = Usuario.query.all()
 
         if current_user.rol == 'admin':
+            logging.info(f"Acceso autorizado para rol admin: devolviendo lista completa de usuarios")
             resultado = [
                 {
                     'id': u.id,
@@ -175,6 +201,7 @@ class ListaUsuarios(Resource):
                 } for u in usuarios
             ]
         elif current_user.rol == 'cliente':
+            logging.info(f"Acceso autorizado para rol cliente: devolviendo datos limitados de usuarios")
             resultado = [
                 {
                     'username': u.username,
@@ -182,22 +209,28 @@ class ListaUsuarios(Resource):
                 } for u in usuarios
             ]
         else:
+            logging.warning(f"Acceso denegado a usuario {current_user.username} con rol {current_user.rol}")
             return {'mensaje': 'Rol no autorizado'}, 403
 
+        logging.info(f"Lista de usuarios enviada correctamente a {current_user.username}")
         return resultado
 
 @auth_ns.route('/editar_usuario/<int:id_usuario>')
 class EditarUsuario(Resource):
     @token_requerido
     def put(current_user, id_usuario):
+        logging.info(f"Usuario {current_user.username} (rol: {current_user.rol}) intenta editar usuario con ID {id_usuario}")
         if current_user.rol != 'admin':
+            logging.warning(f"Acceso denegado a {current_user.username} para editar usuario {id_usuario} - permiso insuficiente")
             return {'mensaje': 'Acceso denegado. Solo los administradores pueden editar usuarios.'}, 403
 
         usuario = Usuario.query.get(id_usuario)
         if not usuario:
+            logging.warning(f"Usuario con ID {id_usuario} no encontrado para edición")
             return {'mensaje': 'Usuario no encontrado'}, 404
 
         data = request.json
+        logging.info(f"Datos recibidos para actualizar usuario {id_usuario}: {data}")
 
         # Actualizar los campos
         usuario.email = data.get('email', usuario.email)
@@ -218,6 +251,7 @@ class EditarUsuario(Resource):
             usuario.cargo_proyecto = None
 
         db.session.commit()
+        logging.info(f"Usuario con ID {id_usuario} actualizado exitosamente por {current_user.username}")
 
         return {'mensaje': 'Usuario actualizado exitosamente'}
 
