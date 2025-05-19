@@ -1,58 +1,30 @@
-# ProyectoAgendaEmpresarial
+# Proyecto Agenda Empresarial
 
-# Proyecto de Agenda Telefónica
+Aplicación completa con Frontend y Backend desplegados en Docker y disponibles en GitHub y DockerHub.
 
-#Tecnologías y versiones
+## ✅ Casos de Uso Funcionales
 
-- Frontend: Node.js (v16), Express (v4.17)
-- Backend: Python (v3.9), Flask (v2.0.1), Flask-RESTPlus (v0.13.0)
+El sistema cuenta con **6 casos de uso implementados**, con:
 
-#Instalación y ejecución
+- Flujos completos validados
+- Reglas de negocio aplicadas
+- Roles correctamente gestionados
+- Manejo de excepciones (errores)
+- Gestión clara de mensajes
 
-#Frontend
+|  | Caso de Uso         |
+|--|----------------------|
+| 1 | Registro de usuario  |
+| 2 | Inicio de sesión     |
+| 3 | Agregar usuario      |
+| 4 | Consultar usuario    |
+| 5 | Editar usuario       |
+| 6 | Eliminar usuario     |
 
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/tu_usuario/tu_repositorio.git
-   cd frontend
+---
+La solución completa se levanta usando `docker-compose`, incluyendo:
 
-instalar dependencias:
-npm install
-
-Ejecutar el servidor:
-node server.js
-
-#Backend
-
-Clonar el repositorio:
-git clone https://github.com/tu_usuario/tu_repositorio.git
-cd backend
-
-
-Crear un entorno virtual:
-python -m venv venv
-
-Activar el entorno virtual:
-venv\Scripts\activate 
-
-Instalar dependencias:
-pip install -r requirements.txt
-
-Ejecutar el servidor:
-python app.py
-
-#Docker
-
-Construir y ejecutar el contenedor Docker para el frontend:
-docker build -t frontend .
-docker run -p 3000:3000 frontend
-
-
-Construir y ejecutar el contenedor Docker para el backend:
-docker build -t backend .
-docker run -p 5000:5000 backend
-
-
-
-
-
+- Frontend
+- Backend
+- Base de Datos (MySQL)
+- ELK Stack (Elasticsearch, Logstash, Kibana)
