@@ -2,16 +2,18 @@
 
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Sesión Iniciada - Panel de Usuario</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
 
     <style>
         /* RESET BASICO */
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
@@ -25,6 +27,10 @@
             padding: 40px 20px;
             overflow-x: hidden;
             animation: fadeIn 1s ease forwards;
+        }
+
+        body.confirmarEliminar {
+            animation: confirmarEliminar 1s ease-in-out infinite alternate;
         }
 
         h1 {
@@ -56,14 +62,21 @@
             margin-top: 25px;
             letter-spacing: 0.04em;
         }
+
         button:hover {
             background: linear-gradient(135deg, #00796b, #004d40);
             box-shadow: 0 12px 20px rgba(0, 77, 64, 0.8);
             transform: translateY(-3px);
         }
+
         button:active {
             transform: translateY(0);
             box-shadow: 0 6px 15px rgba(38, 166, 154, 0.3);
+        }
+
+        button-paginaprincipal {
+            background-color: #00796b;
+            margin-top: 15px;
         }
 
         #usuariosContainer {
@@ -73,7 +86,7 @@
             background: rgba(255, 255, 255, 0.12);
             border-radius: 20px;
             padding: 20px 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
             min-height: 180px;
             color: #004d40;
             overflow-y: auto;
@@ -91,6 +104,7 @@
             align-items: center;
             transition: background 0.3s ease;
         }
+
         .usuario:hover {
             background: #e0f2f1dd;
         }
@@ -107,6 +121,7 @@
             justify-content: flex-end;
             gap: 15px;
         }
+
         .acciones button {
             background: transparent;
             border: none;
@@ -115,11 +130,13 @@
             border-radius: 10px;
             transition: background 0.25s ease;
         }
+
         .acciones button:hover {
             background: #00796b;
             color: #fff;
             box-shadow: 0 4px 12px rgba(0, 121, 107, 0.6);
         }
+
         .acciones button svg {
             width: 18px;
             height: 18px;
@@ -128,7 +145,7 @@
 
         /* Spinner animado */
         .spinner {
-            border: 5px solid rgba(0,0,0,0.1);
+            border: 5px solid rgba(0, 0, 0, 0.1);
             border-top: 5px solid #00796b;
             border-radius: 50%;
             width: 36px;
@@ -137,14 +154,117 @@
             margin: 30px auto;
         }
 
+        #confirmarEliminar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(76, 175, 80, 0.95); /* verde éxito */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 9999;
+        }
+
+        #confirmarEliminar.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #fff;
+            color: #004d40;
+            padding: 30px 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .modal-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        #btnCancelarEliminar {
+            background: #ccc;
+            color: #333;
+        }
+
+        #btnConfirmarEliminar {
+            background: #d32f2f;
+            color: #fff;
+        }
+
+        #btnCancelarEliminar:hover {
+            background: #bbb;
+        }
+
+        #btnConfirmarEliminar:hover {
+            background: #b71c1c;
+        }
+
         /* Animaciones */
         @keyframes fadeIn {
-            0% {opacity: 0; transform: translateY(-40px);}
-            100% {opacity: 1; transform: translateY(0);}
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes spin {
-            0% {transform: rotate(0);}
-            100% {transform: rotate(360deg);}
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -152,28 +272,57 @@
             body {
                 padding: 30px 15px;
             }
+
             h1 {
                 font-size: 2.3rem;
             }
+
             button {
                 width: 100%;
                 padding: 14px 0;
             }
+
             #usuariosContainer {
                 padding: 15px 20px;
             }
+
             .usuario {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+
             .acciones {
                 justify-content: center;
             }
+
+            @keyframes confirmarEliminar {
+                0% {
+                    background-color: #ff4081;
+                }
+                100% {
+                    background-color: #ffeb3b;
+                }
+
+            }
+
         }
     </style>
 
 </head>
 <body>
+
+<div id="confirmarEliminar" class="hidden">✅ ¡Usuario eliminado correctamente!</div>
+
+<div id="modalConfirmarEliminar" class="modal hidden">
+    <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este usuario?<br>Esta acción no se puede deshacer.</p>
+        <div class="modal-buttons">
+            <button id="btnCancelarEliminar">Cancelar</button>
+            <button id="btnConfirmarEliminar">Eliminar</button>
+        </div>
+    </div>
+</div>
+
 
 <h1 id="bienvenida">Bienvenido</h1>
 <p id="rol">Tu rol es:</p>
@@ -183,7 +332,12 @@
 
 <div id="usuariosContainer"></div>
 
+<button class="button-paginaprincipal" onclick="window.location.href='index.html'">
+    Volver a la página principal
+</button>
+
 <script src="js/iniciosesion.js"></script>
+<script src="js/eliminarusuario.js"></script>
 
 </body>
 </html>

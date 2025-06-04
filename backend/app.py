@@ -8,7 +8,6 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 
-
 logging.basicConfig(
     filename='app.log',
     level=logging.INFO,
@@ -21,14 +20,9 @@ formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
-
-
-
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'colder'
-
-
 
 # Configura la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///agenda.db'
@@ -42,6 +36,7 @@ ns = api.namespace('inicio', description='prueba')
 auth_ns = api.namespace('auth', description='Autenticación')
 
 api.add_namespace(auth_ns)
+
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,12 +54,12 @@ class Usuario(db.Model):
     lider_proyecto = db.Column(db.String(100))
     cargo_proyecto = db.Column(db.String(100))
 
-
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 def token_requerido(f):
     @wraps(f)
@@ -82,7 +77,8 @@ def token_requerido(f):
         except:
             return {'mensaje': 'Token inválido o expirado'}, 401
 
-        return f(usuario, *args, **kwargs)
+        return f(args[0], usuario, *args[1:], **kwargs)
+
     return decorador
 
 
@@ -106,6 +102,20 @@ login_model = auth_ns.model('Login', {
     'username': fields.String(required=True, description='Nombre de usuario'),
     'password': fields.String(required=True, description='Contraseña')
 })
+
+
+@auth_ns.route('/whoami')
+class WhoAmI(Resource):
+    @token_requerido
+    def get(self, current_user, *args, **kwargs):
+        logging.info(
+            f"Usuario {current_user.username} (id: {current_user.id}) solicitó su información personal (whoami)")
+        return {
+            'id': current_user.id,
+            'username': current_user.username,
+            'email': current_user.email,
+            'rol': current_user.rol
+        }
 
 @auth_ns.route('/register')
 class Register(Resource):
@@ -161,23 +171,10 @@ class Login(Resource):
         logging.info(f"Login exitoso para usuario: {data.get('username')}, token generado")
         return {'token': token}
 
-
-@auth_ns.route('/whoami')
-class WhoAmI(Resource):
-    @token_requerido
-    def get(current_user, *args, **kwargs):
-        logging.info(f"Usuario {current_user.username} (id: {current_user.id}) solicitó su información personal (whoami)")
-        return {
-            'id': current_user.id,
-            'username': current_user.username,
-            'email': current_user.email,
-            'rol': current_user.rol
-        }
-
 @auth_ns.route('/usuarios')
 class ListaUsuarios(Resource):
     @token_requerido
-    def get(current_user, *args, **kwargs):
+    def get(self, current_user, *args, **kwargs):
         logging.info(f"Usuario {current_user.username} (rol: {current_user.rol}) solicitó la lista de usuarios")
         usuarios = Usuario.query.all()
 
@@ -205,7 +202,14 @@ class ListaUsuarios(Resource):
             resultado = [
                 {
                     'username': u.username,
-                    'email': u.email
+                    'apellido': u.apellido,
+                    'email': u.email,
+                    'empresa': u.empresa,
+                    'cargo': u.cargo,
+                    'en_proyecto': u.en_proyecto,
+                    'nombre_proyecto': u.nombre_proyecto,
+                    'lider_proyecto': u.lider_proyecto,
+                    'cargo_proyecto': u.cargo_proyecto
                 } for u in usuarios
             ]
         else:
@@ -218,10 +222,12 @@ class ListaUsuarios(Resource):
 @auth_ns.route('/editar_usuario/<int:id_usuario>')
 class EditarUsuario(Resource):
     @token_requerido
-    def put(current_user, id_usuario):
-        logging.info(f"Usuario {current_user.username} (rol: {current_user.rol}) intenta editar usuario con ID {id_usuario}")
+    def put(self, current_user, id_usuario):
+        logging.info(
+            f"Usuario {current_user.username} (rol: {current_user.rol}) intenta editar usuario con ID {id_usuario}")
         if current_user.rol != 'admin':
-            logging.warning(f"Acceso denegado a {current_user.username} para editar usuario {id_usuario} - permiso insuficiente")
+            logging.warning(
+                f"Acceso denegado a {current_user.username} para editar usuario {id_usuario} - permiso insuficiente")
             return {'mensaje': 'Acceso denegado. Solo los administradores pueden editar usuarios.'}, 403
 
         usuario = Usuario.query.get(id_usuario)
@@ -256,6 +262,30 @@ class EditarUsuario(Resource):
         return {'mensaje': 'Usuario actualizado exitosamente'}
 
 
+@auth_ns.route('/eliminar_usuario/<int:id_usuario>')
+class EliminarUsuario(Resource):
+    @token_requerido
+    def delete(self, current_user, id_usuario):
+
+        logging.info(f"Usuario {current_user.username} intenta eliminar al usuario con ID {id_usuario}")
+
+        if current_user.rol != 'admin':
+            logging.warning(f"Acceso denegado a {current_user.username} para eliminar usuario {id_usuario}")
+            return {'mensaje': 'Acceso denegado. Solo los administradores pueden eliminar usuarios.'}, 403
+
+        usuario = Usuario.query.get(id_usuario)
+        if not usuario:
+            logging.warning(f"Usuario con ID {id_usuario} no encontrado para eliminar")
+            return {'mensaje': 'Usuario no encontrado'}, 404
+
+        db.session.delete(usuario)
+        db.session.commit()
+        logging.info(f"Usuario con ID {id_usuario} eliminado exitosamente por {current_user.username}")
+
+        return {'mensaje': 'Usuario eliminado exitosamente'}
+
+
+
 with app.app_context():
     db.create_all()
 
@@ -265,4 +295,4 @@ with app.app_context():
         print(f'ID: {u.id}, Usuario: {u.username}, Email: {u.email}, Rol: {u.rol}')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5000)
